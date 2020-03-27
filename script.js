@@ -3,24 +3,7 @@
 $(document).ready(function() {
 
   // set local storage if it exists, create it if it does not
-  let events;
-  if(localStorage.getItem(moment().format('[events-]MMMMDoYYYY')) !== null) {
-    events = JSON.parse(localStorage.getItem(moment().format('[events-]MMMMDoYYYY')));
-  }
-  else {
-    events = {
-      9 : {},
-      10 : {},
-      11 : {},
-      12 : {},
-      1 : {},
-      2 : {},
-      3 : {},
-      4 : {},
-      5 : {}
-    };
-    localStorage.setItem(moment().format('[events-]MMMMDoYYYY'), JSON.stringify(events));
-  }
+  let events = getEvents();
 
   $('#currentDay').text(moment().format('[Current Date: ] dddd, MMMM Do YYYY'));
 
@@ -41,6 +24,9 @@ $(document).ready(function() {
     col2.addClass('col-10 text-col');
     col3.addClass('col-1 text-center save-col');
 
+    // set the hour associated with each save button for storage later
+    row.attr('hour', hours[i]);
+
     // append the columns to the row
     row.append(col1);
     row.append(col2);
@@ -52,6 +38,9 @@ $(document).ready(function() {
     // assign the value of hours[i] to it, if < 12 make it 'am'
     if(i < 3) col1.text(hours[i] + ' AM');
     else col1.text(hours[i] + ' PM');
+
+    // set the text content from the events object
+    col2.text(events[hours[i].toString()].text);
 
   }
 
@@ -78,40 +67,84 @@ $(document).ready(function() {
   });
 
   // clicking the text-col class will allow you to enter text
-  $('.text-col').click(allowTyping);
-
-  function allowTyping() {
-
+  $('.text-col').click(function() {
     const target = $(this);
-
-    const saveButton = target.next('.save-col');
-    saveButton.on('click', save);
-
+    console.log(target);
+    console.log(target.text());
+    console.log(this);
+    console.log('text-col clicked');
     // capture key presses and enter the text into the div
     target.keypress(function(event) {
-      // enter pressed
-      if(event.which === 13) {
-        save();
-      }
-      else {
-        // write to the div
-        div.append(String.fromCharCode(event.which));
-      }
-    });
+        // if enter, save the content for this hour block
+        console.log(this);
+        if(event.which === 13) {
+          setEvents(target.parent().attr('hour'), target.text());
+        }
+        else {
+          console.log(target);
+          // write to the div
+          target.append(String.fromCharCode(event.which));
+        }
+      });
+  });
 
-    // wait for the save-col click in the adjoining div, save to local storage on click
+  // save the text from text column
+  $('.save-col').click(function() {
+    // get the data from the div
+    const text = $(this).text();
+    // get the hour
+    const hour = $(this).parent().attr('hour');
+    // save the data & rewrite events
+    setEvents(hour, text);
 
-    // stop capturing the typing on the save click
+  });
 
-    // maybe?
-    // return false;
-
-
+  // get the events for today from local storage, or create local storage if null
+  function getEvents() {
+    let e;
+    if(localStorage.getItem(moment().format('[events-]MMMMDoYYYY')) !== null) {
+      e = JSON.parse(localStorage.getItem(moment().format('[events-]MMMMDoYYYY')));
+    }
+    else {
+      e = {
+        9 : {
+          text : ''
+        },
+        10 : {
+          text : ''
+        },
+        11 : {
+          text : ''
+        },
+        12 : {
+          text : ''
+        },
+        1 : {
+          text : ''
+        },
+        2 : {
+          text : ''
+        },
+        3 : {
+          text : ''
+        },
+        4 : {
+          text : ''
+        },
+        5 : {
+          text : ''
+        }
+      };
+      localStorage.setItem(moment().format('[events-]MMMMDoYYYY'), JSON.stringify(e));
+    }
+    return e;
   }
 
-  function save() {
-    console.log('saved');
+  // save the event to the right time event in local storage
+  function setEvents(time, content) {
+    console.log(time);
+    events[time.toString()] = content;
+    localStorage.setItem(moment().format('[events-]MMMMDoYYYY'), JSON.stringify(events));
   }
-
 
 });
