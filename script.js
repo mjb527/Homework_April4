@@ -27,6 +27,16 @@ $(document).ready(function() {
     // set the hour associated with each save button for storage later
     row.attr('hour', hours[i]);
 
+    // color the row now, rest of styles later
+    let now = parseInt(moment().format('h'));
+    let color;
+
+    if(hours[i] > now) color = '#00ff55';       // future
+    else if(hours[i] == now) color = '#006699'; // now
+    else color = '#ff1a1a';                     // past
+
+    col2.css('background-color', color);
+
     // append the columns to the row
     row.append(col1);
     row.append(col2);
@@ -46,19 +56,18 @@ $(document).ready(function() {
 
   $('.save-col').append('<i class="fa fa-lock text-white" aria-hidden="true"></i>');
 
-
   // style the elements
   $('.row').css({
     'height' : '100px'
   });
   $('.time-col').css({
-    'border-top' : '1px solid grey'
+    'border-top' : '1px solid grey',
+    'background-color' : '#d6e0f5'
   });
   $('.text-col').css({
     'border-left' : '1px solid grey',
     'border-right' : '1px solid grey',
-    'border-top' : '1px solid grey',
-    'background-color' : '#00ff55'
+    'border-top' : '1px solid grey'
   });
   $('.save-col').css({
     'padding-top' : '4%',
@@ -66,37 +75,35 @@ $(document).ready(function() {
     'border-radius' : '0px 12px 12px 0px'
   });
 
-  // clicking the text-col class will allow you to enter text
   $('.text-col').click(function() {
-    const target = $(this);
+      $('.text-col').removeClass('typehere');
+      $(this).addClass('typehere');
+  });
 
-    // capture key presses and enter the text into the div
-    $(document).keypress(function(event) {
-        // if enter, save the content for this hour block
-        console.log(String.fromCharCode(event.which));
-        if(event.which === 13) {
-          console.log('Enter Pressed');
-          setEvents(target.parent().attr('hour'), target.text());
-          return;
-        }
-        target.append(String.fromCharCode(event.which));
-        
+  $(document).keypress(function() {
+    console.log('hola');
+    // prevent spacebar from scrolling the page
+    if(event.which === 32) event.preventDefault();
 
-        // if(event.which === 13) {
-        //   setEvents(target.parent().attr('hour'), target.text());
-        // }
-        // else {
-        //   console.log(target);
-        //   // write to the div
-        //   target.append(String.fromCharCode(event.which));
-        // }
-      });
+    // allow removal of last character
+    if(event.charCode === 8) {
+      // event.preventDefault();
+      console.log('hey');
+      let text = $('.typehere').text();
+      console.log(text);
+      $('.typehere').text() = text.substring(0, text.length -2);
+    }
+
+    // save on enter
+    if(event.which === 13)
+      setEvents($('.typehere').parent().attr('hour'), $('.typehere').text());
+    $('.typehere').append(String.fromCharCode(event.which));
   });
 
   // save the text from text column
   $('.save-col').click(function() {
     // get the data from the div
-    const text = $(this).text();
+    const text = $(this).prev().text();
     // get the hour
     const hour = $(this).parent().attr('hour');
     // save the data & rewrite events
