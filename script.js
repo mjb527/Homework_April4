@@ -150,7 +150,7 @@ $(document).ready(function() {
     for(let i = 0; i < columns.length; i++) {
       const column = columns[i];
       // color the row now, rest of styles later
-      let parentHour = $(column).parent().attr('hour');
+      let parentHour = parseInt($(column).parent().attr('hour'));
       let now = parseInt(moment().format('H'));
       let formattedHour;
       // if the hour of the row is less than 9, it is afternoon, adjust for 24 hour clock

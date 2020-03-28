@@ -28,19 +28,12 @@ WHEN I click the save button for that timeblock
 THEN the text for that event is saved in local storage
 WHEN I refresh the page
 THEN the saved events persist
-```
 
-The following animation demonstrates the application functionality:
 
-![day planner demo](./Assets/05-third-party-apis-homework-demo.gif)
+## What's under the hood?
 
-## Review
+Each row has an associated hour, which will control the color of the row. Every minute, the script checks to see if the color needs to be updated by comparing the current hour and the hour of the row.
 
-You are required to submit the following for review:
+I utilized the `contenteditable` attribute of a div to allow users to treat the div as an input. When they click Enter or click the save button on the right, it will save the entry to localStorage.
 
-* The URL of the deployed application.
-
-* The URL of the GitHub repository. Give the repository a unique name and include a README describing the project.
-
-- - -
-© 2019 Trilogy Education Services, a 2U, Inc. brand. All Rights Reserved.
+LocalStorage is generated every day as events-MonthDayYear so long as it doesn't exist. If it does, it is loaded and saved to a variable. The events will be saved as nested JSON, with each hour having its own event.
