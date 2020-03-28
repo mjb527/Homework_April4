@@ -52,12 +52,12 @@ $(document).ready(function() {
     'height' : '100px'
   });
   $('.time-col').css({
-    'border-top' : '1px solid black'
+    'border-top' : '1px solid grey'
   });
   $('.text-col').css({
-    'border-left' : '1px solid black',
-    'border-right' : '1px solid black',
-    'border-top' : '1px solid black',
+    'border-left' : '1px solid grey',
+    'border-right' : '1px solid grey',
+    'border-top' : '1px solid grey',
     'background-color' : '#00ff55'
   });
   $('.save-col').css({
@@ -69,22 +69,27 @@ $(document).ready(function() {
   // clicking the text-col class will allow you to enter text
   $('.text-col').click(function() {
     const target = $(this);
-    console.log(target);
-    console.log(target.text());
-    console.log(this);
-    console.log('text-col clicked');
+
     // capture key presses and enter the text into the div
-    target.keypress(function(event) {
+    $(document).keypress(function(event) {
         // if enter, save the content for this hour block
-        console.log(this);
+        console.log(String.fromCharCode(event.which));
         if(event.which === 13) {
+          console.log('Enter Pressed');
           setEvents(target.parent().attr('hour'), target.text());
+          return;
         }
-        else {
-          console.log(target);
-          // write to the div
-          target.append(String.fromCharCode(event.which));
-        }
+        target.append(String.fromCharCode(event.which));
+        
+
+        // if(event.which === 13) {
+        //   setEvents(target.parent().attr('hour'), target.text());
+        // }
+        // else {
+        //   console.log(target);
+        //   // write to the div
+        //   target.append(String.fromCharCode(event.which));
+        // }
       });
   });
 
