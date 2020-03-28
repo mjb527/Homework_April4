@@ -20,29 +20,15 @@ $(document).ready(function() {
 
     // add classes for styling and logic
     row.addClass('row');
-    col1.addClass('col-1 text-right pt-2 time-col');
+    col1.addClass('col-1 text-left time-col');
     col2.addClass('col-10 text-col');
-    col3.addClass('col-1 text-center save-col');
+    col3.addClass('col-1 text-center  save-col');
 
     // set the hour associated with each save button for storage later
     row.attr('hour', hours[i]);
 
     // make the div editable
     col2.attr('contenteditable', 'true');
-
-    // color the row now, rest of styles later
-    let now = parseInt(moment().format('h'));
-    let formattedHour;
-    if(hours[i] < 9) formattedHour = hours[i] + 12;
-    else formattedHour = hours[i];
-    if(moment().format('a') == 'pm' && now < 12) now += 12;
-    let color;
-
-    if(formattedHour > now) color = '#00ff55';       // future
-    else if(formattedHour == now) color = '#006699'; // now
-    else color = '#ff1a1a';                     // past
-
-    col2.css('background-color', color);
 
     // append the columns to the row
     row.append(col1);
@@ -53,8 +39,11 @@ $(document).ready(function() {
     container.append(row);
 
     // assign the value of hours[i] to it, if < 12 make it 'am'
-    if(i < 3) col1.text(hours[i] + ' AM');
-    else col1.text(hours[i] + ' PM');
+    const div = $('<div>');
+    div.addClass('mx-auto my-auto')
+    if(i < 3) div.text(hours[i] + ' AM');
+    else div.text(hours[i] + ' PM');
+    col1.append(div);
 
     // set the text content from the events object
     col2.text(events[hours[i].toString()].text);
@@ -69,7 +58,8 @@ $(document).ready(function() {
   });
   $('.time-col').css({
     'border-top' : '1px solid grey',
-    'background-color' : '#d6e0f5'
+    'background-color' : '#d6e0f5',
+    'border-radius' : '12px 0 0 12px'
   });
   $('.text-col').css({
     'border-left' : '1px solid grey',
@@ -77,10 +67,14 @@ $(document).ready(function() {
     'border-top' : '1px solid grey'
   });
   $('.save-col').css({
-    'padding-top' : '4%',
     'background-color' : '#00bfff',
-    'border-radius' : '0px 12px 12px 0px'
+    'border-radius' : '0px 12px 12px 0px',
+    'padding-top' : '3.5%'
   });
+  // run once at the start of the script
+  colorTheHour();
+  // run every minute from there on
+  const timeout = setTimeout(colorTheHour, 1000 * 60);
 
   $('.text-col').click(function() {
       $('.text-col').removeClass('typehere');
@@ -149,6 +143,27 @@ $(document).ready(function() {
   function setEvents(time, content) {
     events[time.toString()].text = content;
     localStorage.setItem(moment().format('[events-]MMMMDoYYYY'), JSON.stringify(events));
+  }
+
+  function colorTheHour() {
+    columns = $('.text-col');
+    for(let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      // color the row now, rest of styles later
+      let parentHour = $(column).parent().attr('hour');
+      let now = parseInt(moment().format('H'));
+      let formattedHour;
+      // if the hour of the row is less than 9, it is afternoon, adjust for 24 hour clock
+      if(parentHour < 9) formattedHour = parentHour + 12;
+      else formattedHour = parentHour;
+      let color;
+
+      if(formattedHour > now) color = '#00ff55';       // future
+      else if(formattedHour == now) color = '#006699'; // now
+      else color = '#ff1a1a';                          // past
+
+      $(column).css('background-color', color);
+    }
   }
 
 });
