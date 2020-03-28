@@ -74,7 +74,7 @@ $(document).ready(function() {
   // run once at the start of the script
   colorTheHour();
   // run every minute from there on
-  const timeout = setTimeout(colorTheHour, 1000 * 60);
+  const interval = setInterval(colorTheHour, 1000 * 60);
 
   $('.text-col').click(function() {
       $('.text-col').removeClass('typehere');
