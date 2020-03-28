@@ -27,12 +27,19 @@ $(document).ready(function() {
     // set the hour associated with each save button for storage later
     row.attr('hour', hours[i]);
 
+    // make the div editable
+    col2.attr('contenteditable', 'true');
+
     // color the row now, rest of styles later
     let now = parseInt(moment().format('h'));
+    let formattedHour;
+    if(hours[i] < 9) formattedHour = hours[i] + 12;
+    else formattedHour = hours[i];
+    if(moment().format('a') == 'pm' && now < 12) now += 12;
     let color;
 
-    if(hours[i] > now) color = '#00ff55';       // future
-    else if(hours[i] == now) color = '#006699'; // now
+    if(formattedHour > now) color = '#00ff55';       // future
+    else if(formattedHour == now) color = '#006699'; // now
     else color = '#ff1a1a';                     // past
 
     col2.css('background-color', color);
@@ -81,23 +88,9 @@ $(document).ready(function() {
   });
 
   $(document).keypress(function() {
-    console.log('hola');
-    // prevent spacebar from scrolling the page
-    if(event.which === 32) event.preventDefault();
-
-    // allow removal of last character
-    if(event.charCode === 8) {
-      // event.preventDefault();
-      console.log('hey');
-      let text = $('.typehere').text();
-      console.log(text);
-      $('.typehere').text() = text.substring(0, text.length -2);
-    }
-
     // save on enter
-    if(event.which === 13)
-      setEvents($('.typehere').parent().attr('hour'), $('.typehere').text());
-    $('.typehere').append(String.fromCharCode(event.which));
+    if(event.which === 13) setEvents($('.typehere').parent().attr('hour'), $('.typehere').text());
+
   });
 
   // save the text from text column
@@ -154,8 +147,7 @@ $(document).ready(function() {
 
   // save the event to the right time event in local storage
   function setEvents(time, content) {
-    console.log(time);
-    events[time.toString()] = content;
+    events[time.toString()].text = content;
     localStorage.setItem(moment().format('[events-]MMMMDoYYYY'), JSON.stringify(events));
   }
 
